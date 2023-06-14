@@ -11,13 +11,6 @@ export function makeSendLinkBalancerPoolToCLPoolProposalMsgs(
   const aminoMsg = {
     type: "cosmos-sdk/MsgSubmitProposal",
     value: {
-      initial_deposit: [
-        {
-          denom: "uosmo",
-          amount: "100000000",
-        },
-      ],
-      proposer: sender,
       content: {
         type: "osmosis/UpdateMigrationRecordsProposal",
         value: {
@@ -31,6 +24,13 @@ export function makeSendLinkBalancerPoolToCLPoolProposalMsgs(
           ],
         },
       },
+      initial_deposit: [
+        {
+          denom: "uosmo",
+          amount: "100000000",
+        },
+      ],
+      proposer: sender,
     },
   };
 
