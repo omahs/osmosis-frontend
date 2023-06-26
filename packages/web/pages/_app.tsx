@@ -145,23 +145,23 @@ function MyApp({ Component, pageProps }: AppProps) {
   useAmplitudeAnalytics({ init: true });
 
   return (
-    <StoreProvider>
-      <WalletSelectProvider>
-        <DefaultSeo />
-        <IbcNotifier />
-        <ToastContainer
-          toastStyle={{
-            backgroundColor: IS_FRONTIER ? "#2E2C2F" : "#2d2755",
-          }}
-          transition={Bounce}
-        />
-        <MainLayout menus={menus}>
-          <ErrorBoundary fallback={ErrorFallback}>
+    <ErrorBoundary fallback={ErrorFallback}>
+      <StoreProvider>
+        <WalletSelectProvider>
+          <DefaultSeo />
+          <IbcNotifier />
+          <ToastContainer
+            toastStyle={{
+              backgroundColor: IS_FRONTIER ? "#2E2C2F" : "#2d2755",
+            }}
+            transition={Bounce}
+          />
+          <MainLayout menus={menus}>
             {Component && <Component {...pageProps} />}
-          </ErrorBoundary>
-        </MainLayout>
-      </WalletSelectProvider>
-    </StoreProvider>
+          </MainLayout>
+        </WalletSelectProvider>
+      </StoreProvider>
+    </ErrorBoundary>
   );
 }
 
