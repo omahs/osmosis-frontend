@@ -1,6 +1,6 @@
 import { ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
 import { AppCurrency } from "@keplr-wallet/types";
-import { Dec, Int } from "@keplr-wallet/unit";
+import { Dec, DecUtils, Int } from "@keplr-wallet/unit";
 import {
   ActiveLiquidityPerTickRange,
   maxSpotPrice,
@@ -92,6 +92,14 @@ export class ObservableHistoricalAndLiquidityData {
     return this.chainGetter
       .getChain(this.chainId)
       .findCurrency(this.quoteDenom);
+  }
+
+  @computed
+  protected get multiplicationQuoteOverBase(): Dec {
+    return DecUtils.getTenExponentN(
+      (this.baseCurrency?.coinDecimals || 0) -
+        (this.quoteCurrency?.coinDecimals || 0)
+    );
   }
 
   @computed
@@ -190,6 +198,8 @@ export class ObservableHistoricalAndLiquidityData {
     const chartMin = Math.max(0, Math.min(...prices));
     const chartMax = Math.max(...prices);
 
+    console.log("yRange", this.range);
+
     const absMax = this.range
       ? Math.max(Number(this.range[1].toString()), chartMax)
       : chartMax;
@@ -219,18 +229,43 @@ export class ObservableHistoricalAndLiquidityData {
     const data = this.activeLiquidity;
     const [min, max] = this.yRange;
 
+    console.log({ min, max });
+
     if (min === max) return [];
 
     const depths: { price: number; depth: number }[] = [];
 
     for (let price = min; price <= max; price += (max - min) / 20) {
-      const spotPrice = Math.min(
-        Math.max(Number(minSpotPrice.toString()), price),
-        Number(maxSpotPrice.toString())
+      const normalizedMin = Number(
+        minSpotPrice.mul(this.multiplicationQuoteOverBase).toString()
       );
+      const normalizedMax = Number(
+        maxSpotPrice.mul(this.multiplicationQuoteOverBase).toString()
+      );
+      const normalizedSpotPrice = Math.min(
+        Math.max(normalizedMin, price),
+        normalizedMax
+      );
+
+      console.log({
+        price,
+        spotPrice: normalizedSpotPrice,
+        getLiqTick: priceToTick(
+          new Dec(normalizedSpotPrice).quo(this.multiplicationQuoteOverBase)
+        ).toString(),
+        curTick:
+          this.pool?.concentratedLiquidityPoolInfo?.currentTick.toString(),
+        mult: this.multiplicationQuoteOverBase.toString(),
+      });
+
       depths.push({
         price,
-        depth: getLiqFrom(priceToTick(new Dec(spotPrice)), data),
+        depth: getLiqFrom(
+          priceToTick(
+            new Dec(normalizedSpotPrice).quo(this.multiplicationQuoteOverBase)
+          ),
+          data
+        ),
       });
     }
 

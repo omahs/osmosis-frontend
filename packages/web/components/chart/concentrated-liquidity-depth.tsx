@@ -56,6 +56,8 @@ const ConcentratedLiquidityDepthChart: FunctionComponent<{
   fullRange = false,
 }) => {
   const xMax = xRange[1];
+
+  console.log("depth chart", { min, max, yRange });
   const showMinDragHandler =
     Boolean(min) && Boolean(onMoveMin) && Boolean(onSubmitMin);
   const showMaxDragHandler =

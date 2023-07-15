@@ -146,6 +146,7 @@ export class ObservableQueryPool extends ObservableChainQuery<{
           .toDec()
           .mul(multiplicationQuoteOverBase),
         currentTickLiquidity: this.pool.currentTickLiquidity,
+        currentTick: this.pool.currentTick,
         tickSpacing: this.pool.tickSpacing,
         exponentAtPriceOne: this.pool.exponentAtPriceOne,
       };
