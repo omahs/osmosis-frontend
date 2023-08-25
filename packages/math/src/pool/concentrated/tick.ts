@@ -250,9 +250,14 @@ export function estimateInitialTickBound({
   }
 
   const price = sqrtPriceTarget.pow(new Int(2));
+  const boundTick = priceToTick(price);
 
   return {
-    boundTickIndex: priceToTick(price),
+    boundTickIndex: boundTick.lte(minTick)
+      ? minTick
+      : boundTick.gte(maxTick)
+      ? maxTick
+      : boundTick,
   };
 }
 
