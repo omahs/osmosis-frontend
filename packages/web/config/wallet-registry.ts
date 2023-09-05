@@ -173,6 +173,9 @@ export const WalletRegistry: RegistryWallet[] = [
 
       return error;
     },
+    signOptions: {
+      preferNoSetFee: true,
+    },
     features: [],
   },
 ];
